@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors');
 
 // Load configuration
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
@@ -10,8 +11,8 @@ const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
 const app = express();
 const port = 3000;
 
-// Middleware for parsing JSON request body
 app.use(bodyParser.json());
+app.use(cors()); // Используем cors middleware
 
 // Initialize the Telegram bot with your token
 const bot = new TelegramBot(config.token, { polling: true });
@@ -20,7 +21,7 @@ const bot = new TelegramBot(config.token, { polling: true });
 const userDataPath = path.join(__dirname, 'userData.json');
 
 // Function to read user data from the JSON file
-const readUserData = () => {
+const readUser Data = () => {
     if (fs.existsSync(userDataPath)) {
         const data = fs.readFileSync(userDataPath);
         if (data.length === 0) return {}; // Handle empty file
@@ -30,7 +31,7 @@ const readUserData = () => {
 };
 
 // Function to write user data to the JSON file
-const writeUserData = (data) => {
+const writeUser Data = (data) => {
     fs.writeFileSync(userDataPath, JSON.stringify(data, null, 2));
 };
 
@@ -226,7 +227,6 @@ bot.on('callback_query', (callbackQuery) => {
     bot.sendMessage(callbackQuery.message.chat.id, `Отправляем на: ${action}`);
 });
 
-// Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
