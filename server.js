@@ -21,7 +21,7 @@ const bot = new TelegramBot(config.token, { polling: true });
 const userDataPath = path.join(__dirname, 'userData.json');
 
 // Function to read user data from the JSON file
-const readUser Data = () => {
+const readUserData = () => {
     if (fs.existsSync(userDataPath)) {
         const data = fs.readFileSync(userDataPath);
         if (data.length === 0) return {}; // Handle empty file
@@ -31,7 +31,7 @@ const readUser Data = () => {
 };
 
 // Function to write user data to the JSON file
-const writeUser Data = (data) => {
+const writeUserData = (data) => {
     fs.writeFileSync(userDataPath, JSON.stringify(data, null, 2));
 };
 
