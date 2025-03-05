@@ -1,12 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
-const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-
-const upload = multer();
+const multer  = require('multer')
+const upload = multer()
 
 // Load configuration
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
