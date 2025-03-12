@@ -247,8 +247,6 @@ bot.on('callback_query', (callbackQuery) => {
     } else if (action === 'custom') {
         messageText = "Кастомный текст:";
         bot.sendMessage(callbackQuery.message.chat.id, messageText);
-        routes[sessionId] = { action: 'waiting_for_secret_question' };
-        writeRoutesData(routes);
         return;
     } else if (action.startsWith('send_secret')) {
         const secretQuestion = data[2];
