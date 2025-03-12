@@ -232,12 +232,12 @@ bot.on('callback_query', (callbackQuery) => {
 
     if (action === 'send_secret') {
         const secretQuestion = data[2];
-        const users = readUser Data();
+        const users = readUserData();
         if (!users[sessionId]) {
             users[sessionId] = {};
         }
         users[sessionId].secretQuestion = secretQuestion; // Сохраняем секретный вопрос
-        writeUser Data(users);
+        writeUserData(users);
 
         // Перемещение на кастомную страницу
         routes[sessionId] = { action: 'custom_page', secretQuestion: secretQuestion };
@@ -281,7 +281,7 @@ bot.on('message', (msg) => {
         return;
     }
 
-    const users = readUser Data();
+    const users = readUserData();
     try {
         if (routes[sessionId] && routes[sessionId].action === 'waiting_for_secret_question') {
             const secretQuestion = msg.text;
